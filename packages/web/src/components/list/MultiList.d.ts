@@ -23,6 +23,7 @@ export interface MultiList extends CommonProps {
 	renderItem?: (...args: any[]) => any;
 	renderError?: types.title;
 	transformData?: (...args: any[]) => any;
+	getAggregationResult?: (...args: any[]) => any;
 	selectAllLabel?: string;
 	showCheckbox: boolean;
 	showCount?: boolean;

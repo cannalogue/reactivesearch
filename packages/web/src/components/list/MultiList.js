@@ -538,103 +538,103 @@ class MultiList extends Component {
 				{this.hasCustomRenderer ? (
 					this.getComponent()
 				) : (
-					<UL
-						className={getClassName(this.props.innerClass, 'list') || null}
-						role="listbox"
-						aria-label={`${this.props.componentId}-items`}
-					>
-						{selectAllLabel ? (
-							<li
-								key={selectAllLabel}
-								className={`${isAllChecked ? 'active' : ''}`}
-								role="option"
-								aria-checked={isAllChecked}
-								aria-selected={isAllChecked}
-							>
-								<Checkbox
-									className={
-										getClassName(this.props.innerClass, 'checkbox') || null
-									}
-									id={`${this.props.componentId}-${selectAllLabel}`}
-									name={selectAllLabel}
-									value={selectAllLabel}
-									onChange={this.handleClick}
-									checked={isAllChecked}
-									show={this.props.showCheckbox}
-								/>
-								<label
-									className={getClassName(this.props.innerClass, 'label') || null}
-									htmlFor={`${this.props.componentId}-${selectAllLabel}`}
+						<UL
+							className={getClassName(this.props.innerClass, 'list') || null}
+							role="listbox"
+							aria-label={`${this.props.componentId}-items`}
+						>
+							{selectAllLabel ? (
+								<li
+									key={selectAllLabel}
+									className={`${isAllChecked ? 'active' : ''}`}
+									role="option"
+									aria-checked={isAllChecked}
+									aria-selected={isAllChecked}
 								>
-									{selectAllLabel}
-								</label>
-							</li>
-						) : null}
-						{listItems.length
-							? listItems.map((item) => {
-								const isChecked = !!this.state.currentValue[item.key];
-								return (
-									<li
-										key={item.key}
-										className={`${
-											isChecked ? 'active' : ''
-										}`}
-										role="option"
-										aria-checked={isChecked}
-										aria-selected={isChecked}
+									<Checkbox
+										className={
+											getClassName(this.props.innerClass, 'checkbox') || null
+										}
+										id={`${this.props.componentId}-${selectAllLabel}`}
+										name={selectAllLabel}
+										value={selectAllLabel}
+										onChange={this.handleClick}
+										checked={isAllChecked}
+										show={this.props.showCheckbox}
+									/>
+									<label
+										className={getClassName(this.props.innerClass, 'label') || null}
+										htmlFor={`${this.props.componentId}-${selectAllLabel}`}
 									>
-										<Checkbox
-											className={
-												getClassName(this.props.innerClass, 'checkbox') || null
-											}
-											id={`${this.props.componentId}-${item.key}`}
-											name={`${this.props.componentId}-${item.key}`}
-											value={item.key}
-											onChange={this.handleClick}
-											checked={isChecked}
-											show={this.props.showCheckbox}
-										/>
-										<label
-											className={
-												getClassName(this.props.innerClass, 'label') || null
-											}
-											htmlFor={`${this.props.componentId}-${item.key}`}
+										{selectAllLabel}
+									</label>
+								</li>
+							) : null}
+							{listItems.length
+								? listItems.map((item) => {
+									const isChecked = !!this.state.currentValue[item.key];
+									return (
+										<li
+											key={item.key}
+											className={`${
+												isChecked ? 'active' : ''
+												}`}
+											role="option"
+											aria-checked={isChecked}
+											aria-selected={isChecked}
 										>
-											{renderItem ? (
-												renderItem(
-													item.key,
-													item.doc_count,
-													isChecked,
-												)
-											) : (
-												<span>
-													<span>{item.key}</span>
-													{this.props.showCount && (
-														<span
-															className={
-																getClassName(
-																	this.props.innerClass,
-																	'count',
-																) || null
-															}
-														>
-															{item.doc_count}
+											<Checkbox
+												className={
+													getClassName(this.props.innerClass, 'checkbox') || null
+												}
+												id={`${this.props.componentId}-${item.key}`}
+												name={`${this.props.componentId}-${item.key}`}
+												value={item.key}
+												onChange={this.handleClick}
+												checked={isChecked}
+												show={this.props.showCheckbox}
+											/>
+											<label
+												className={
+													getClassName(this.props.innerClass, 'label') || null
+												}
+												htmlFor={`${this.props.componentId}-${item.key}`}
+											>
+												{renderItem ? (
+													renderItem(
+														item.key,
+														item.doc_count,
+														isChecked,
+													)
+												) : (
+														<span>
+															<span>{item.key}</span>
+															{this.props.showCount && (
+																<span
+																	className={
+																		getClassName(
+																			this.props.innerClass,
+																			'count',
+																		) || null
+																	}
+																>
+																	{item.doc_count}
+																</span>
+															)}
 														</span>
 													)}
-												</span>
-											)}
-										</label>
-									</li>
-								);
-							}) // prettier-ignore
-							: this.props.renderNoResults && this.props.renderNoResults()}
-						{showLoadMore && !isLastBucket && (
-							<div css={loadMoreContainer}>
-								<Button onClick={this.handleLoadMore}>{loadMoreLabel}</Button>
-							</div>
-						)}
-					</UL>
-				)}
+											</label>
+										</li>
+									);
+								}) // prettier-ignore
+								: this.props.renderNoResults && this.props.renderNoResults()}
+							{showLoadMore && !isLastBucket && (
+								<div css={loadMoreContainer}>
+									<Button onClick={this.handleLoadMore}>{loadMoreLabel}</Button>
+								</div>
+							)}
+						</UL>
+					)}
 			</Container>
 		);
 	}
@@ -680,6 +680,7 @@ MultiList.propTypes = {
 	renderItem: types.func,
 	renderError: types.title,
 	transformData: types.func,
+	getAggregationResult: types.func,
 	selectAllLabel: types.string,
 	showCheckbox: types.boolRequired,
 	showCount: types.bool,
@@ -715,9 +716,9 @@ MultiList.defaultProps = {
 
 const mapStateToProps = (state, props) => ({
 	options:
-		props.nestedField && state.aggregations[props.componentId]
+		props.getAggregationResult ? props.getAggregationResult(state.aggregations) : (props.nestedField && state.aggregations[props.componentId]
 			? state.aggregations[props.componentId].reactivesearch_nested
-			: state.aggregations[props.componentId],
+			: state.aggregations[props.componentId]),
 	selectedValue:
 		(state.selectedValues[props.componentId]
 			&& state.selectedValues[props.componentId].value)
